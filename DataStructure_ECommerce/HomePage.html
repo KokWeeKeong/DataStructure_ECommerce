@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        #container {
+            display: flex;
+            background-color: white;
+        }
+
+            #container > #productRow {
+                text-align: center;
+            }
+    </style>
+</head>
+<body>
+    <img align="right" src="Image/shopping-cart.png" /><hr />
+    <div id="container">
+        <div id="productRow">
+        </div>
+    </div>
+    <hr />
+    <h2>Order Summary</h2>
+    <div id="cartlist"></div>
+    <button id="clear">Clear All Cart Item</button>
+</body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+    var product = [
+        {
+            Id: "1",
+            productName: "Logitech Mouse",
+            unitprice: 45
+        },
+        {
+            Id: "2",
+            productName: "Logitech Keyboard",
+            unitprice: 50
+        },
+        {
+            Id: "3",
+            productName: "HP Mouse",
+            unitprice: 35
+        },
+        {
+            Id: "4",
+            productName: "HP Keyboard",
+            unitprice: 32
+        },
+        {
+            Id: "5",
+            productName: "Microsoft Mouse",
+            unitprice: 43
+        },
+        {
+            Id: "6",
+            productName: "Microsoft Keyboard",
+            unitprice: 39
+        }
+    ]
+
+    var cart = [];
+
+    let htmlProduct = "";
+    Object.keys(product).forEach(function (obj) {
+        htmlProduct = htmlProduct + `<div style="border: 1px solid red">\
+                      <h2>${product[obj].productName}</h2>
+                      <p>RM ${product[obj].unitprice}</p>
+                      <p><button class="AddBtn" value=${product[obj].Id}>Add to Cart</button></p>\
+                      </div>`;
+
+    })
+    $("#productRow").append(htmlProduct);
+
+    $(".AddBtn").click(function (obj) {
+        debugger;
+        var selectedproduct = obj.target.value;
+        //var lala = parseInt(selectedproduct);
+        var prod = product.find(p => p.Id === selectedproduct);
+        var checkcart = cart.find(c => c.Id === selectedproduct);
+        if (checkcart == null) {
+            cart.push({ Id: prod.Id, productName: prod.productName, unitprice: prod.unitprice, quantity: 1 });
+            let cartproduct = "";
+            cartproduct = cartproduct + `<div>\<span id="test">
+                          ${prod.productName}
+                          RM ${prod.unitprice}
+                          Quantity :
+                          <span value="${prod.Id}" id="${prod.Id}">1</span>
+                          <button class="add" value=${prod.Id}>+</button>
+                          <button class="minus" value=${prod.Id}>-</button>
+                          <button class="delete" value=${prod.Id}>x</button>
+                          <span id=${prod.Id + "Total"}>Total RM${prod.unitprice}</span>
+                          </span>\</div>`
+
+            $("#cartlist").append(cartproduct);
+
+            $(".add").click(function (obj) {
+                debugger;
+                var checkID = obj.target.value;
+                var checkproduct = cart.find(p => p.Id == checkID);
+                checkproduct.quantity += 1;
+                var test = checkproduct.Id;
+                $(`${"#" + test}`).html(checkproduct.quantity);
+                $(`${"#" + test + "Total"}`).html("Total RM" + checkproduct.quantity * checkproduct.unitprice);
+            })
+
+            $(".minus").click(function (obj) {
+                debugger;
+                var checkID = obj.target.value;
+                var checkproduct = cart.find(p => p.Id == checkID);
+                var test = checkproduct.Id;
+                $(`${"#" + test}`).html(checkproduct.quantity);
+
+                if (checkproduct.quantity == 1) {
+                    checkproduct.quantity = 1;
+                }
+                else {
+                    checkproduct.quantity -= 1;
+                    $(`${"#" + test}`).html(checkproduct.quantity);
+                    $(`${"#" + test + "Total"}`).html("Total RM" + checkproduct.quantity * checkproduct.unitprice);
+                };
+            })
+
+            $(".delete").click(function (obj) {
+                debugger;
+                let cartproduct = "";
+                var checkID = obj.target.value;
+                var checkproduct = cart.filter(p => p.Id != checkID);
+                cart = [];
+                $("#cartlist").html("");
+                Object.keys(checkproduct).forEach(function (obj) {
+                    cart.push({ Id: checkproduct[obj].Id, productName: checkproduct[obj].productName, unitprice: checkproduct[obj].unitprice, quantity: checkproduct[obj].quantity });
+
+                    cartproduct = cartproduct + `<div>\<span id="test">${checkproduct[obj].productName}
+                          RM ${checkproduct[obj].unitprice}
+                          Quantity :
+                          <span value="${checkproduct[obj].Id}" id="${checkproduct[obj].Id}">1</span>
+                          <button class="add" value=${checkproduct[obj].Id}>+</button>
+                          <button class="minus" value=${checkproduct[obj].Id}>-</button>
+                          <button class="delete" value=${checkproduct[obj].Id}>x</button></span>\</div>`
+                })
+                $("#cartlist").append(cartproduct);
+            })
+        }
+        else {
+            var checkproduct = cart.find(p => p.Id == selectedproduct);
+            checkproduct.quantity += 1;
+            var test = checkproduct.Id;
+            $(`${"#" + test}`).html(checkproduct.quantity);
+        }
+    });
+
+    $("#clear").click(function () {
+        cart = [];
+        $("#cartlist").empty();
+    });
+</script>
+
+
